@@ -202,6 +202,6 @@ public final class PasswordGenerator {
 	}
 	
 	public static String passwordGenerator(int length) {
-		
+		return "Helo";
 	}
 }
