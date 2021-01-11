@@ -1,5 +1,9 @@
 package PasswordGenerator;
 
+import java.util.Random;
+/*
+ * This class generates the passwords and also checks for some invalid inputs.
+ */
 public final class PasswordGenerator {
 	private static final int ALPHABET_LENGTH = 26;
 	private static final int ASCIIVALUE_a = 97;
@@ -149,7 +153,7 @@ public final class PasswordGenerator {
 	public static String computeVernamLongKey(String key1, String key2) {
 		// checks for invalid inputs
 		if ((key1 == null) || (key2 == null) || (!isLowerCase(key1))
-		    || (isLowerCase(key2)) || (key1.equals(""))
+		    || (!isLowerCase(key2)) || (key1.equals(""))
 		    || (key2.equals(""))) {
 		        return null;
 		}
@@ -202,6 +206,18 @@ public final class PasswordGenerator {
 	}
 	
 	public static String passwordGenerator(int length) {
-		return "Helo";
+		if (length < 0) {
+			return null;
+		}
+		String randomPass = "";
+		Random rand = new Random();
+		int randNum;
+		char randChar;
+		for (int i = 0; i < length; i++) {
+			randNum = rand.nextInt(93) + 33;
+			randChar = (char)randNum;
+			randomPass += randChar;
+		}
+		return randomPass;
 	}
 }

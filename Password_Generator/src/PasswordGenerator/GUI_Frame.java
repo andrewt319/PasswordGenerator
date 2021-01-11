@@ -16,27 +16,35 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+
+/*
+ * Creates UI screen for password generating/encoding/decoding.
+ */
 public class GUI_Frame extends JFrame implements ActionListener {
 	JComboBox comboBox;
 	JLabel promptLabel;
 	JLabel popUpLabel;
 	JLabel key1Label;
 	JLabel key2Label;
+	JLabel passwordLabel;
 	JPanel panel;
+	JPanel popUpPanel;
+	JPanel passwordPanel;
 	JButton enterButton;
 	JButton submitButton;
 	JFrame popUpFrame;
+	JFrame passwordFrame;
 	JTextField passwordText;
 	JTextField key1Text;
 	JTextField key2Text;
-	JPanel popUpPanel;
+	ErrorChecker error;
 	
 	public GUI_Frame() {
 		this.setSize(400, 200);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Password Generator");
 		this.setLocationRelativeTo(null);
-		
+		error = new ErrorChecker();
 		String[] passwordOptions = {"Generator", "Vernam Encryption", "Vigenere Encryption", 
 									"Vernam Decryption", "Vigenere Decryption"};
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -77,10 +85,9 @@ public class GUI_Frame extends JFrame implements ActionListener {
 			popUpLabel = new JLabel();
 			submitButton = new JButton("Submit");
 			submitButton.addActionListener(this);
-			popUpFrame.setSize(500,200);
+			popUpFrame.setSize(400,200);
 			popUpFrame.setLocationRelativeTo(null);
 			popUpPanel.setLayout(new GridBagLayout());
-			
 			passwordText.setPreferredSize(new Dimension(150, 20));
 			
 			switch ((String) comboBox.getSelectedItem()) {
@@ -115,7 +122,38 @@ public class GUI_Frame extends JFrame implements ActionListener {
 		}
 		
 		if (e.getSource() == submitButton) {
-			System.out.println("hello");
+			passwordFrame = new JFrame();
+			passwordPanel = new JPanel();
+			passwordLabel = new JLabel();
+			passwordFrame.setSize(400,200);
+			passwordFrame.setLocationRelativeTo(null);
+			passwordPanel.setLayout(new GridBagLayout());
+			
+			switch ((String) comboBox.getSelectedItem()) {
+			case "Generator":
+				passwordFrame.setTitle("Password Generator");
+				passwordGenText();
+				break;
+			case "Vernam Encryption":
+				passwordFrame.setTitle("Vernam Encryption");
+				vernamEncryptionText();
+				break;
+			case "Vigenere Encryption":
+				passwordFrame.setTitle("Vigenere Encryption: ");
+				vigenereEncryptionText();
+				break;
+			case "Vernam Decryption":
+				passwordFrame.setTitle("Vernam Decryption");
+				popUpLabel.setText("Enter password to decrypt (vernam): ");
+				vernamDecryptionText();
+				break;
+			case "Vigenere Decryption":
+				passwordFrame.setTitle("Vigenere Decryption");
+				popUpLabel.setText("Enter password to decrypt (decrypt): ");
+				vigenereDecryptionText();
+				break;
+			}
+			popUpFrame.dispose();
 		}
 		
 	}
@@ -194,5 +232,76 @@ public class GUI_Frame extends JFrame implements ActionListener {
 		gbc.insets = new Insets(10,0,0,0);
 		popUpPanel.add(submitButton, gbc);
 		return true;
+	}
+	
+	private void passwordGenText() {
+		if (!error.checkPassGenText(passwordText.getText())) {
+			return;
+		}
+		String requestedText;
+		int length = Integer.parseInt(passwordText.getText()); // do checks if this is even inside range
+		requestedText = PasswordGenerator.passwordGenerator(length);
+		passwordLabel.setText("Random Password: " + requestedText);
+		passwordPanel.add(passwordLabel);
+		passwordFrame.add(passwordPanel);
+		passwordFrame.setVisible(true);
+	}
+	
+	private void vernamEncryptionText() {
+		String inputtedPass = passwordText.getText();
+		String inputtedKey1 = key1Text.getText();
+		String inputtedKey2 = key2Text.getText();
+		if (!error.checkTexts(inputtedPass, inputtedKey1, inputtedKey2)) {
+			return;
+		}
+		String requestedText;
+		requestedText = PasswordGenerator.vernamEncode(inputtedPass, inputtedKey1, inputtedKey2);
+		passwordLabel.setText("Vernam Encryption: " + requestedText);
+		passwordPanel.add(passwordLabel);
+		passwordFrame.add(passwordPanel);
+		passwordFrame.setVisible(true);
+	}
+	
+	private void vernamDecryptionText() {
+		String inputtedPass = passwordText.getText();
+		String inputtedKey1 = key1Text.getText();
+		String inputtedKey2 = key2Text.getText();
+		if (!error.checkTexts(inputtedPass, inputtedKey1, inputtedKey2)) {
+			return;
+		}
+		String requestedText;
+		requestedText = PasswordGenerator.vernamDecode(inputtedPass, inputtedKey1, inputtedKey2);
+		passwordLabel.setText("Vernam Decryption: " + requestedText);
+		passwordPanel.add(passwordLabel);
+		passwordFrame.add(passwordPanel);
+		passwordFrame.setVisible(true);
+	}
+	
+	private void vigenereEncryptionText() {
+		String inputtedPass = passwordText.getText();
+		String inputtedKey1 = key1Text.getText();
+		if (!error.checkTexts(inputtedPass, inputtedKey1)) {
+			return;
+		}
+		String requestedText;
+		requestedText = PasswordGenerator.vigenereEncode(inputtedPass, inputtedKey1);
+		passwordLabel.setText("Vernam Decryption: " + requestedText);
+		passwordPanel.add(passwordLabel);
+		passwordFrame.add(passwordPanel);
+		passwordFrame.setVisible(true);
+	}
+	
+	private void vigenereDecryptionText() {
+		String inputtedPass = passwordText.getText();
+		String inputtedKey1 = key1Text.getText();
+		if (!error.checkTexts(inputtedPass, inputtedKey1)) {
+			return;
+		}
+		String requestedText;
+		requestedText = PasswordGenerator.vigenereDecode(inputtedPass, inputtedKey1);
+		passwordLabel.setText("Vernam Decryption: " + requestedText);
+		passwordPanel.add(passwordLabel);
+		passwordFrame.add(passwordPanel);
+		passwordFrame.setVisible(true);
 	}
 }
